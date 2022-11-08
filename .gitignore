@@ -1,0 +1,8 @@
+.stack-work/
+dist-new/
+judge-hs.cabal
+*.log
+core
+*.hi
+*.o
+*~
