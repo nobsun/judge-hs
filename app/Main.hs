@@ -1,8 +1,9 @@
 module Main where
 
 import Data.Bool ( bool )
-import Data.List ( sort )
-import System.Environment ( getArgs )
+import Data.List ( sort, isSuffixOf )
+import Data.Time
+import System.Environment ( getArgs, getProgName )
 import System.Directory ( listDirectory )
 import System.FilePath ( (</>), isExtensionOf, takeFileName )
 import System.IO ( hGetContents )
@@ -23,9 +24,16 @@ main = do
 loop :: String -> [FilePath] -> [FilePath] -> IO ()
 loop _   []     _      = return ()
 loop cmd (i:is) (o:os) = do
+    start <- getCurrentTime
     cp@(_, Just hout, _, _)
-            <- createProcess (shell ("stack exec -- " ++ cmd ++ " < " ++ i)) { std_out = CreatePipe }
+            <- createProcess 
+                (shell ("stack exec -- " ++ cmd 
+                 ++ " < " ++ i))
+                { std_out = CreatePipe }
     out0 <- hGetContents hout
     out1 <- filter (/= '\r') <$> readFile o
-    putStrLn (takeFileName i ++ ": " ++ bool "WA" "ACC" (out0 == out1))
+    let msg = bool "WA" "AC" (out0 == out1)
+    putStr (takeFileName i ++ ": " ++ msg ++ " : ")
+    end <- getCurrentTime
+    print (diffUTCTime end start)
     loop cmd is os
