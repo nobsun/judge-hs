@@ -17,7 +17,8 @@ import System.Process
 main :: IO ()
 main = do
     probid:_ <- getArgs
-    fs <- sort . filter (isExtensionOf "txt") <$> listDirectory ("test" </> "case" </> probid </> "in")
+    fs <- sort . filter (isExtensionOf "txt") 
+            <$> listDirectory ("test" </> "case" </> probid </> "in")
     let ins  = map (("test" </>) . ("case" </>) . (probid </>) . ("in" </>)) fs
     let outs = map (("test" </>) . ("case" </>) . (probid </>) . ("out" </>)) fs
     loop probid ins outs
@@ -28,8 +29,8 @@ loop cmd (i:is) (o:os) = do
     start <- getCurrentTime
     cp@(_, Just hout, _, _)
             <- createProcess 
-                (shell ("stack exec -- " ++ cmd 
-                --  ++ " +RTS -s -RTS"
+                (shell ("stack exec " ++ cmd 
+                 -- ++ " +RTS -p -RTS"
                  ++ " < " ++ i))
                 { std_out = CreatePipe }
     out0 <- B.hGetContents hout
