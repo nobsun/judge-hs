@@ -16,12 +16,12 @@ import System.Process
 
 main :: IO ()
 main = do
-    probid:_ <- getArgs
+    probid:projid:_ <- getArgs
     fs <- sort . filter (isExtensionOf "txt") 
             <$> listDirectory ("test" </> "case" </> probid </> "in")
     let ins  = map (("test" </>) . ("case" </>) . (probid </>) . ("in" </>)) fs
     let outs = map (("test" </>) . ("case" </>) . (probid </>) . ("out" </>)) fs
-    loop probid ins outs
+    loop projid ins outs
 
 loop :: String -> [FilePath] -> [FilePath] -> IO ()
 loop _   []     _      = return ()
